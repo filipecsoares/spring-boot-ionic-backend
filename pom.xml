@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.vendas</groupId>
-	<artifactId>vendas</artifactId>
+	<artifactId>spring-boot-ionic-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>vendas</name>
+	<name>spring-boot-ionic-backend</name>
 	<description>Spring Boot project Vendas</description>
 
 	<properties>
