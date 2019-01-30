@@ -1,6 +1,8 @@
 package com.vendas.resources;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.vendas.domain.Categoria;
+import com.vendas.dto.CategoriaDTO;
 import com.vendas.services.CategoriaService;
 
 @RestController
@@ -28,6 +31,14 @@ public class CategoriaResource {
 	public ResponseEntity<Categoria> findById(@PathVariable Long id) {
 		Categoria categoria = service.findById(id);
 		return ResponseEntity.ok().body(categoria);
+	}
+
+	@GetMapping
+	public ResponseEntity<List<CategoriaDTO>> findAll() {
+		List<Categoria> categorias = service.findAll();
+		List<CategoriaDTO> categoriasDto = categorias.stream().map(obj -> new CategoriaDTO(obj))
+				.collect(Collectors.toList());
+		return ResponseEntity.ok().body(categoriasDto);
 	}
 
 	@PostMapping
