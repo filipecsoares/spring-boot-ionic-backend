@@ -1,5 +1,6 @@
 package com.vendas.resources;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,15 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.vendas.domain.Cliente;
 import com.vendas.dto.ClienteDTO;
+import com.vendas.dto.ClienteNewDTO;
 import com.vendas.services.ClienteService;
 
 @RestController
@@ -38,8 +42,7 @@ public class ClienteResource {
 	@GetMapping
 	public ResponseEntity<List<ClienteDTO>> findAll() {
 		List<Cliente> cliente = service.findAll();
-		List<ClienteDTO> categoriasDto = cliente.stream().map(obj -> new ClienteDTO(obj))
-				.collect(Collectors.toList());
+		List<ClienteDTO> categoriasDto = cliente.stream().map(obj -> new ClienteDTO(obj)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(categoriasDto);
 	}
 
@@ -65,5 +68,13 @@ public class ClienteResource {
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping
+	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO dto) {
+		Cliente obj = service.fromDTO(dto);
+		obj = service.insert(obj);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+		return ResponseEntity.created(uri).build();
 	}
 }
