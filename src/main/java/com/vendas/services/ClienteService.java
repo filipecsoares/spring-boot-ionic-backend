@@ -14,11 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.vendas.domain.Cidade;
 import com.vendas.domain.Cliente;
 import com.vendas.domain.Endereco;
+import com.vendas.domain.enums.Perfil;
 import com.vendas.domain.enums.TipoCliente;
 import com.vendas.dto.ClienteDTO;
 import com.vendas.dto.ClienteNewDTO;
 import com.vendas.repositories.ClienteRepository;
 import com.vendas.repositories.EnderecoRepository;
+import com.vendas.security.UserSS;
+import com.vendas.services.exceptions.AuthorizationException;
 import com.vendas.services.exceptions.DataIntegrityException;
 import com.vendas.services.exceptions.ObjectNotFoundException;
 
@@ -35,6 +38,11 @@ public class ClienteService {
 	private EnderecoRepository enderecoRepository;
 
 	public Cliente findById(Long id) {
+		UserSS user = UserService.authenticated();
+		if (user == null || !user.hasRole(Perfil.ADMIN) || !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado");
+		}
+
 		return repository.findById(id).orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo:" + Cliente.class.getName()));
 	}
