@@ -111,6 +111,17 @@ public class ClienteService {
 	}
 
 	public URI uploadProfilePicture(MultipartFile multipartFile) {
-		return s3Service.uploadFile(multipartFile);
+		UserSS user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Acesso negado");
+		}
+		URI uri = s3Service.uploadFile(multipartFile);
+
+		Cliente cliente = repository.findById(user.getId()).orElseThrow(() -> new ObjectNotFoundException(
+				"Objeto não encontrado! Id: " + user.getId() + ", Tipo:" + Cliente.class.getName()));
+		cliente.setImageUrl(uri.toString());
+		repository.save(cliente);
+
+		return uri;
 	}
 }
